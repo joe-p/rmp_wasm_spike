@@ -1,6 +1,14 @@
 # Results
 
+## TL;DR
+
+rmp_serde ended up taking up an extra 60kb 
+
 ## Manual rmpv
+
+
+<details>
+<summary>Source</summary>
 
 ```rust
 #![cfg_attr(not(test), no_std)]
@@ -107,6 +115,9 @@ pub fn decode_person(bytes: &[u8]) -> Person {
 }
 ```
 
+</details>
+
+
 ```sh
 cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-unknown-unknown/debug/rmpv_wasm_spike.wasm                                                                   
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
@@ -143,7 +154,17 @@ cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-un
 
 ```
 
+```sh
+cargo build --target wasm32-unknown-unknown --release && ls -lh target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
+   Compiling rmpv_wasm_spike v0.1.0 (/Users/joe/git/joe-p/rmpv_wasm_spike)
+    Finished `release` profile [optimized] target(s) in 0.34s
+-rwxr-xr-x 1 joe staff 35K May 15 08:43 target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
+```
+
 ## Serde
+
+<details>
+<summary>Source</summary>
 
 ```rust
 #![cfg_attr(not(test), no_std)]
@@ -182,6 +203,7 @@ pub fn decode_person(bytes: &[u8]) -> Person {
     rmp_serde::decode::from_slice::<Person>(bytes).unwrap()
 }
 ```
+</details>
 
 ```sh
 cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-unknown-unknown/debug/rmpv_wasm_spike.wasm
@@ -216,6 +238,7 @@ cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-un
         291400 ┊     8.71% ┊ ... and 1284 more.
        3344659 ┊   100.00% ┊ Σ [1309 Total Rows]
 ```
+
 
 ```sh
 cargo build --target wasm32-unknown-unknown --release && ls -lh target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
