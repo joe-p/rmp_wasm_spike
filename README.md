@@ -1,5 +1,9 @@
 # Results
 
+## TL;DR
+
+rmp_serde ended up taking up an extra 60kb 
+
 ## Manual rmpv
 
 ```rust
@@ -141,6 +145,13 @@ cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-un
        2351051 ┊   100.00% ┊ Σ [952 Total Rows]
 
 
+```
+
+```sh
+cargo build --target wasm32-unknown-unknown --release && ls -lh target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
+   Compiling rmpv_wasm_spike v0.1.0 (/Users/joe/git/joe-p/rmpv_wasm_spike)
+    Finished `release` profile [optimized] target(s) in 0.34s
+-rwxr-xr-x 1 joe staff 35K May 15 08:43 target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
 ```
 
 ## Serde
