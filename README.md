@@ -6,6 +6,10 @@ rmp_serde ended up taking up an extra 60kb
 
 ## Manual rmpv
 
+
+<details>
+<summary>Source</summary>
+
 ```rust
 #![cfg_attr(not(test), no_std)]
 extern crate alloc;
@@ -111,6 +115,9 @@ pub fn decode_person(bytes: &[u8]) -> Person {
 }
 ```
 
+</details>
+
+
 ```sh
 cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-unknown-unknown/debug/rmpv_wasm_spike.wasm                                                                   
     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
@@ -155,6 +162,9 @@ cargo build --target wasm32-unknown-unknown --release && ls -lh target/wasm32-un
 ```
 
 ## Serde
+
+<details>
+<summary>Source</summary>
 
 ```rust
 #![cfg_attr(not(test), no_std)]
@@ -227,6 +237,8 @@ cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-un
         291400 ┊     8.71% ┊ ... and 1284 more.
        3344659 ┊   100.00% ┊ Σ [1309 Total Rows]
 ```
+
+</details>
 
 ```sh
 cargo build --target wasm32-unknown-unknown --release && ls -lh target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
