@@ -203,6 +203,7 @@ pub fn decode_person(bytes: &[u8]) -> Person {
     rmp_serde::decode::from_slice::<Person>(bytes).unwrap()
 }
 ```
+</details>
 
 ```sh
 cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-unknown-unknown/debug/rmpv_wasm_spike.wasm
@@ -238,7 +239,6 @@ cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-un
        3344659 ┊   100.00% ┊ Σ [1309 Total Rows]
 ```
 
-</details>
 
 ```sh
 cargo build --target wasm32-unknown-unknown --release && ls -lh target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
