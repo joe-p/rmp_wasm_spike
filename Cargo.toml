@@ -1,0 +1,20 @@
+[package]
+name = "rmpv_wasm_spike"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+test = false
+
+[profile.release]
+opt-level = "z"
+lto = true
+strip = true
+codegen-units = 1
+panic = "abort"
+
+[dependencies]
+dlmalloc = {version = "0.2.8", features = ["global"] }
+rmpv = {version = "*", git = "https://github.com/joe-p/msgpack-rust", branch = "spike/no_std", default-features = false }
+wasm-bindgen = {version = "0.2.100", default-features = false }
