@@ -142,3 +142,83 @@ cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-un
 
 
 ```
+
+## Serde
+
+```rust
+#![cfg_attr(not(test), no_std)]
+extern crate alloc;
+
+use alloc::string::String;
+use alloc::vec::Vec;
+
+use serde::{Deserialize, Serialize};
+
+mod allocator {
+    use dlmalloc::GlobalDlmalloc;
+
+    #[global_allocator]
+    static GLOBAL: GlobalDlmalloc = GlobalDlmalloc;
+}
+
+#[wasm_bindgen]
+#[derive(Debug, PartialEq, Deserialize, Serialize)]
+pub struct Person {
+    name: String,
+    favorite_numbers: Vec<u64>,
+}
+
+use wasm_bindgen::prelude::wasm_bindgen;
+
+#[wasm_bindgen]
+pub fn encode_person(person: Person) -> Vec<u8> {
+    let mut bytes: &mut [u8] = Default::default();
+    rmp_serde::encode::write_named(&mut bytes, &person).unwrap();
+    bytes.into()
+}
+
+#[wasm_bindgen]
+pub fn decode_person(bytes: &[u8]) -> Person {
+    rmp_serde::decode::from_slice::<Person>(bytes).unwrap()
+}
+```
+
+```sh
+cargo build --target wasm32-unknown-unknown && twiggy top -n 25 target/wasm32-unknown-unknown/debug/rmpv_wasm_spike.wasm
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.02s
+ Shallow Bytes │ Shallow % │ Item
+───────────────┼───────────┼────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+       1252022 ┊    37.43% ┊ custom section '.debug_str'
+        919424 ┊    27.49% ┊ custom section '.debug_info'
+        409014 ┊    12.23% ┊ custom section '.debug_line'
+        193240 ┊     5.78% ┊ custom section '.debug_ranges'
+        109524 ┊     3.27% ┊ "function names" subsection
+         43060 ┊     1.29% ┊ custom section '.debug_abbrev'
+         26821 ┊     0.80% ┊ data[0]
+         11077 ┊     0.33% ┊ rmp_serde::decode::Deserializer<R,C>::any_inner::hbe76e66aeff02637
+         10064 ┊     0.30% ┊ rmp_serde::decode::Deserializer<R,C>::any_inner::hbc41a079341fedb0
+         10064 ┊     0.30% ┊ rmp_serde::decode::Deserializer<R,C>::any_inner::hbee1935b44fe0fe7
+          9215 ┊     0.28% ┊ rmp_serde::decode::Deserializer<R,C>::any_inner::h404c028f0d238628
+          9160 ┊     0.27% ┊ rmp_serde::decode::Deserializer<R,C>::any_inner::hdb79955562fccdcd
+          6318 ┊     0.19% ┊ core::num::flt2dec::strategy::dragon::format_shortest::h4f5fa41f6b4ce83e
+          5327 ┊     0.16% ┊ <rmpv_wasm_spike::_::<impl serde::de::Deserialize for rmpv_wasm_spike::Person>::deserialize::__Visitor as serde::de::Visitor>::visit_map::h4ddaea5c1e4d3a00
+          5326 ┊     0.16% ┊ core::num::flt2dec::strategy::dragon::format_exact::hab52be0c58f4af3c
+          4030 ┊     0.12% ┊ rmp_serde::decode::any_num::h36e59fac7268b2e6
+          3998 ┊     0.12% ┊ rmp_serde::decode::any_num::h8a9c7c5b522b9c12
+          3998 ┊     0.12% ┊ rmp_serde::decode::any_num::h882e0a5c35a0b212
+          3998 ┊     0.12% ┊ rmp_serde::decode::any_num::hc0c2a15dcb8ee49a
+          3998 ┊     0.12% ┊ rmp_serde::decode::any_num::hdbc4c2657d11ab6f
+          3998 ┊     0.12% ┊ rmp_serde::decode::any_num::hf737d1e2a5c83429
+          2502 ┊     0.07% ┊ <rmp::marker::Marker as core::fmt::Debug>::fmt::hc65dadb530b76337
+          2449 ┊     0.07% ┊ <&mut rmp_serde::encode::Serializer<W,C> as serde::ser::Serializer>::collect_seq::hacfd5380732b9556
+          2325 ┊     0.07% ┊ alloc::raw_vec::RawVecInner<A>::grow_amortized::hce419f262655f50c
+          2307 ┊     0.07% ┊ core::num::flt2dec::strategy::grisu::format_shortest_opt::h92f7d21e0b778354
+        291400 ┊     8.71% ┊ ... and 1284 more.
+       3344659 ┊   100.00% ┊ Σ [1309 Total Rows]
+```
+
+```sh
+cargo build --target wasm32-unknown-unknown --release && ls -lh target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
+    Finished `release` profile [optimized] target(s) in 0.01s
+-rwxr-xr-x 1 joe staff 95K May 15 08:42 target/wasm32-unknown-unknown/release/rmpv_wasm_spike.wasm
+```
